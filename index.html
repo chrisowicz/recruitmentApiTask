@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <title>Drugie zadanie rekrutacyjne</title>
+    <style>
+        body {
+            position: relative;
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 1rem;
+            line-height: 1.1;
+            margin: 60px;
+            padding-bottom: 60px;
+            color: #1E1E1E;
+        }
+        @media (max-width: 991px) {
+            body {
+                margin: 30px;
+            }
+        }
+        .product {
+            border: 1px solid #b0b0b0;
+            padding: 20px;
+            margin: 20px 0 30px;
+            text-align: center;
+        }
+        .product h2, h3, #product-container strong, a {
+            color: #7bcb9e;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+        .image {
+            /* display: none; */
+            height: 50vh;
+        }
+        .error {
+            color: red;
+        }
+        .reviews {
+            border: 4px solid #7bcb9e;
+            padding: 20px;
+            margin-top: 20px;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            
+        }
+        @media (max-width: 991px) {
+            .reviews {
+                flex-direction: column;
+            }
+        }
+        .review {
+            border-right: 0.5px solid #b0b0b0;
+            padding-right: 20px;
+        }
+        .review:last-child {
+            border: none;
+            padding: 0;
+        }
+        .review p {
+            margin-bottom: 0;
+        }
+        @media (max-width: 991px) {
+            .review {
+                border-right: none;
+                border-bottom: 0.5px solid #b0b0b0;
+                padding: 0 0 20px 0;
+                width: 100%;
+                text-align: center;
+            }
+        }
+        .copy {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            margin: 0;
+            text-align: right;
+            font-size: .8rem;
+            font-weight: 200;
+        }
+    </style>
+</head>
+<body>
+    <a href="https://wandachowicz.com"><img src="logoSignet.png" alt="wandachowicz.com"></a>
+    <h1>Drugie zadanie rekrutacyjne</h1>
+    <div id="product-container"></div>
+    <script>
+        // Pobieram produkt 1 asynchronicznie
+        async function fetchProduct() {
+            const productContainer = document.getElementById('product-container');
+
+            try {
+                const response = await fetch('https://dummyjson.com/products/1');
+                // Sprawdzam 200
+                if (!response.ok) {
+                    throw new Error('Nie udało się pobrać danych');
+                }
+                const product = await response.json();
+
+                // Sprawdzam czy produkt ma miniaturę
+                if (product.thumbnail) {
+                    productContainer.innerHTML = `
+                        <div class="product">
+                            <h2>${product.title}</h2>
+                            <img src="${product.thumbnail}" alt="${product.title}">
+                            <p><strong>Opis:</strong> ${product.description}</p>
+                            <p><strong>Kategoria:</strong> ${product.category}</p>
+                            <p><strong>Cena:</strong> $${product.price.toFixed(2)}</p>
+                            <p><strong>Rabat:</strong> ${product.discountPercentage}%</p>
+                            <p><strong>Ocena:</strong> ${product.rating} (na podstawie ${product.reviews.length} recenzji)</p>
+                            <p><strong>Stan:</strong> ${product.availabilityStatus}</p>
+                            <p><strong>Marka:</strong> ${product.brand}</p>
+                            <p><strong>SKU:</strong> ${product.sku}</p>
+                            <p><strong>Waga:</strong> ${product.weight} g</p>
+                            <p><strong>Wymiary:</strong> ${product.dimensions.width} x ${product.dimensions.height} x ${product.dimensions.depth} cm</p>
+                            <p><strong>Informacje o gwarancji:</strong> ${product.warrantyInformation}</p>
+                            <p><strong>Informacje o wysyłce:</strong> ${product.shippingInformation}</p>
+                            <p><strong>Polityka zwrotów:</strong> ${product.returnPolicy}</p>
+                            <img class="image" src="${product.images[0]}" alt="${product.title} - obrazek">
+                        </div>
+                        <h3>Recenzje:</h3>
+                        <div class="reviews">
+                            ${product.reviews.map(review => `
+                                <div class="review">
+                                    <strong>${review.reviewerName}</strong> (${review.rating}/5):
+                                    <p>${review.comment}</p>
+                                    <p><em>Data: ${new Date(review.date).toLocaleDateString()}</em></p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                } else {
+                    productContainer.innerHTML = `
+                    <div class="product">
+                        <h2>${product.title}</h2>
+                        <p><strong>Opis:</strong> ${product.description}</p>
+                        <p class="error">Brak obrazka produktu</p>
+                        </div>
+                        `;
+                    // Nie powielałem pozostałych danych
+                }
+            } catch (error) {
+                productContainer.innerHTML = `
+                    <p class="error"><strong>Wystąpił błąd:</strong> ${error.message}</p>
+                `;
+            }
+        }
+
+        // Wywołanie funkcji do pobrania produktu
+        fetchProduct();
+    </script>
+    <p class="copy">Dla ThermoSilesia – <a href="https://wandachowicz.com">Krzysiek Wandachowicz</a></p>
+</body>
+</html>
